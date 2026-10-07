@@ -31,7 +31,7 @@
             box-sizing: border-box;
         }
 
-        /* Doubled in height: Increased vertical padding and set a generous minimum height */
+        /* Large Status Indicator Card filled completely by the status color */
         .display-panel {
             background-color: var(--card-default);
             border-radius: 8px;
@@ -42,19 +42,19 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         #current-status-text {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 800;
             margin: 0;
             letter-spacing: 0.5px;
         }
 
         #custom-message-display {
-            font-size: 1rem;
+            font-size: 0.95rem;
             opacity: 0.9;
             font-style: italic;
             margin: 0;
@@ -67,7 +67,7 @@
             background: rgba(0, 0, 0, 0.25);
             padding: 4px 10px;
             border-radius: 4px;
-            margin-top: 6px;
+            margin-top: 4px;
             display: none;
         }
 
@@ -140,7 +140,7 @@
 </head>
 <body>
 
-    <!-- Large Status Indicator (Double Height) -->
+    <!-- Large Status Indicator (Changes full background color) -->
     <div class="display-panel" id="display-card">
         <p id="current-status-text">SELECT STATUS</p>
         <p id="custom-message-display">No custom note set</p>
@@ -152,7 +152,7 @@
         <button class="status-btn btn-free" onclick="setStatus('Free / Available', varColor('free'), '#111111')">
             ○ Free / Available
         </button>
-        <button class="status-btn btn-busy" onclick="setStatus('Busy', '#111111')">
+        <button class="status-btn btn-busy" onclick="setStatus('Busy / Do Not Disturb', varColor('busy'), '#111111')">
             ○ Busy
         </button>
         <button class="status-btn btn-coffee" onclick="setStatus('Busy, but yes to coffee!', varColor('coffee'), '#ffffff')">
@@ -193,12 +193,14 @@
         function setStatus(statusName, bgColor, textColor) {
             const card = document.getElementById('display-card');
             const text = document.getElementById('current-status-text');
+            const msgDisplay = document.getElementById('custom-message-display');
             const timerEl = document.getElementById('timer-display');
             const durationSelect = document.getElementById('timer-select');
             
             clearInterval(countdownInterval);
             timerEl.style.display = "none";
 
+            // Turn panel into the full status colour
             card.style.backgroundColor = bgColor;
             card.style.color = textColor;
             text.style.color = textColor;
