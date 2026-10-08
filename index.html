@@ -1,243 +1,698 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Status Sidebar</title>
-    <style>
-        :root {
-            --bg-color: #1a1a1a;
-            --card-default: #2a2a2a;
-            --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            
-            --color-free: #2ecc71;
-            --color-busy: #f1c40f;
-            --color-coffee: #3498db;
-            --color-urgent: #e67e22;
-            --color-dnd: #e74c3c;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Status Sidebar</title>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            height: 100vh;
-            box-sizing: border-box;
-        }
+<style>
+:root{
+    --free:#2ecc71;
+    --busy:#f1c40f;
+    --coffee:#3498db;
+    --urgent:#e67e22;
+    --dnd:#e74c3c;
 
-        /* Large Status Indicator Card filled completely by the status color */
-        .display-panel {
-            background-color: var(--card-default);
-            border-radius: 8px;
-            padding: 90px 16px; /* Doubled the top/bottom padding */
-            min-height: 140px;  /* Added a distinct minimum layout height */
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
+    --dark:#111111;
+    --light:#ffffff;
+}
 
-        #current-status-text {
-            font-size: 2.2rem; /* <--- MODIFY THIS LINE FOR FONT SIZE 1.3rem (std) 1.8rem (larger) 2.2rem (Very bold) 2.5rem (Max size before 2nd line) */
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: 0.5px;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-        #custom-message-display {
-            font-size: 0.95rem;
-            opacity: 0.9;
-            font-style: italic;
-            margin: 0;
-        }
+html,
+body{
+    height:100%;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
 
-        #timer-display {
-            font-size: 1.1rem;
-            font-family: monospace;
-            font-weight: bold;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 4px 10px;
-            border-radius: 4px;
-            margin-top: 4px;
-            display: none;
-        }
+body{
+    background:var(--free);
+    color:var(--dark);
 
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-           margin-top: auto; /* <--- THIS LINE pushes buttons down */
-        }
+    display:flex;
+    flex-direction:column;
 
-        /* Hollow / Outline Buttons style */
-        .status-btn {
-            background: transparent;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
-            text-indent: 6px;
-        }
+    overflow:hidden;
 
-        .status-btn:active { transform: scale(0.98); }
+    transition:
+        background-color .3s ease,
+        color .3s ease;
+}
 
-        .btn-free { border: 2px solid var(--color-free); color: var(--color-free); }
-        .btn-free:hover { background: rgba(46, 204, 113, 0.1); }
+/* ==================================================
+   MAIN STATUS AREA
+   ================================================== */
 
-        .btn-busy { border: 2px solid var(--color-busy); color: var(--color-busy); }
-        .btn-busy:hover { background: rgba(241, 196, 15, 0.1); }
+.display-panel{
+    flex:1;
 
-        .btn-coffee { border: 2px solid var(--color-coffee); color: var(--color-coffee); }
-        .btn-coffee:hover { background: rgba(52, 152, 219, 0.1); }
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
 
-        .btn-urgent { border: 2px solid var(--color-urgent); color: var(--color-urgent); }
-        .btn-urgent:hover { background: rgba(230, 126, 34, 0.1); }
+    text-align:center;
 
-        .btn-dnd { border: 2px solid var(--color-dnd); color: var(--color-dnd); }
-        .btn-dnd:hover { background: rgba(231, 76, 60, 0.1); }
+    padding:20px;
 
-        .settings-panel {
-            background-color: var(--card-default);
-            padding: 12px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            /* margin-top: auto;                                                       this line commented out to allow buttons to go to bottom of page */ 
-        }
+    transition:all .3s ease;
+}
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+#current-status-text{
+    font-size:2.4rem;
+    font-weight:800;
+    line-height:1.1;
+    text-transform:uppercase;
+    word-break:break-word;
+}
 
-        label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
+#custom-message-display{
+    margin-top:12px;
 
-        input, select {
-            background: var(--bg-color);
-            border: 1px solid #444;
-            color: var(--text-main);
-            padding: 7px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-    </style>
+    font-size:1.1rem;
+    font-style:italic;
+
+    opacity:.95;
+
+    max-width:90%;
+    word-wrap:break-word;
+}
+
+#timer-display{
+    margin-top:16px;
+
+    display:none;
+
+    font-family:Consolas,Monaco,monospace;
+    font-size:1.15rem;
+    font-weight:700;
+
+    padding:6px 12px;
+
+    border-radius:6px;
+
+    background:rgba(0,0,0,.15);
+}
+
+/* ==================================================
+   CONTROLS DRAWER
+   ================================================== */
+
+details{
+    flex-shrink:0;
+
+    background:#111111;
+    color:#ffffff;
+
+    border-top:2px solid rgba(255,255,255,.1);
+
+    box-shadow:
+        0 -8px 20px rgba(0,0,0,.35);
+}
+
+summary{
+    cursor:pointer;
+
+    user-select:none;
+
+    text-align:center;
+
+    font-size:.85rem;
+    font-weight:700;
+
+    padding:10px;
+
+    list-style:none;
+
+    opacity:.85;
+}
+
+summary::-webkit-details-marker{
+    display:none;
+}
+
+.tray-content{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+    padding:12px;
+}
+
+/* ==================================================
+   STATUS BUTTONS
+   ================================================== */
+
+.status-btn{
+    background:transparent;
+
+    padding:12px;
+
+    font-size:.95rem;
+    font-weight:700;
+
+    text-align:left;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.status-btn:hover{
+    transform:translateY(-1px);
+}
+
+.status-btn:active{
+    transform:scale(.98);
+}
+
+.btn-free{
+    border:2px solid var(--free);
+    color:var(--free);
+}
+
+.btn-free:hover{
+    background:rgba(46,204,113,.15);
+}
+
+.btn-busy{
+    border:2px solid var(--busy);
+    color:var(--busy);
+}
+
+.btn-busy:hover{
+    background:rgba(241,196,15,.15);
+}
+
+.btn-coffee{
+    border:2px solid var(--coffee);
+    color:var(--coffee);
+}
+
+.btn-coffee:hover{
+    background:rgba(52,152,219,.15);
+}
+
+.btn-urgent{
+    border:2px solid var(--urgent);
+    color:var(--urgent);
+}
+
+.btn-urgent:hover{
+    background:rgba(230,126,34,.15);
+}
+
+.btn-dnd{
+    border:2px solid var(--dnd);
+    color:var(--dnd);
+}
+
+.btn-dnd:hover{
+    background:rgba(231,76,60,.15);
+}
+
+/* ==================================================
+   INPUTS
+   ================================================== */
+
+.input-group{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+label{
+    font-size:.8rem;
+    color:#cccccc;
+}
+
+input,
+select{
+    width:100%;
+
+    padding:8px;
+
+    font-size:.9rem;
+
+    border-radius:6px;
+
+    border:1px solid #444;
+
+    background:#222;
+    color:#fff;
+}
+
+input:focus,
+select:focus{
+    outline:none;
+    border-color:#888;
+}
+
+@media(max-width:400px){
+
+    #current-status-text{
+        font-size:2rem;
+    }
+
+}
+</style>
 </head>
 <body>
 
-    <!-- Large Status Indicator (Changes full background color) -->
-    <div class="display-panel" id="display-card">
-        <p id="current-status-text">SELECT STATUS</p>
-        <p id="custom-message-display">No custom note set</p>
-        <div id="timer-display">00:00</div>
+<div class="display-panel">
+
+    <div id="current-status-text">
+        FREE / AVAILABLE
     </div>
 
-    <!-- Outline Buttons -->
-    <div class="controls">
-        <button class="status-btn btn-free" onclick="setStatus('Free / Available', varColor('free'), '#111111')">
+    <div id="custom-message-display">
+        No custom note set
+    </div>
+
+    <div id="timer-display">
+        00:00
+    </div>
+
+</div>
+
+<!-- COLLAPSED BY DEFAULT -->
+<details id="controlTray">
+
+    <summary id="traySummary">
+        ▲ Click to Show Controls
+    </summary>
+
+    <div class="tray-content">
+
+        <button
+            class="status-btn btn-free"
+            onclick="setStatus('Free / Available','#2ecc71','#111111')">
             ○ Free / Available
         </button>
-        <button class="status-btn btn-busy" onclick="setStatus('Busy / In Meeting', varColor('busy'), '#111111')">
+
+        <button
+            class="status-btn btn-busy"
+            onclick="setStatus('Busy / In Meeting','#f1c40f','#111111')">
             ○ Busy / In Meeting
         </button>
-        <button class="status-btn btn-coffee" onclick="setStatus('Busy, but yes to coffee!', varColor('coffee'), '#ffffff')">
+
+        <button
+            class="status-btn btn-coffee"
+            onclick="setStatus('Busy, but coffee? ☕','#3498db','#ffffff')">
             ○ Busy, but coffee? ☕
         </button>
-        <button class="status-btn btn-urgent" onclick="setStatus('Urgent Interruptions Only', varColor('urgent'), '#111111')">
+
+        <button
+            class="status-btn btn-urgent"
+            onclick="setStatus('Urgent Only','#e67e22','#111111')">
             ○ Urgent Only
         </button>
-        <button class="status-btn btn-dnd" onclick="setStatus('Do Not Disturb', varColor('dnd'), '#ffffff')">
+
+        <button
+            class="status-btn btn-dnd"
+            onclick="setStatus('Do Not Disturb','#e74c3c','#ffffff')">
             ○ Do Not Disturb
         </button>
-    </div>
 
-    <div class="settings-panel">
         <div class="input-group">
-            <label for="custom-msg">Status Note (e.g., "Back soon")</label>
-            <input type="text" id="custom-msg" placeholder="Type a note..." oninput="updateMessage()">
+            <label for="custom-msg">Status Note</label>
+            <input
+                id="custom-msg"
+                type="text"
+                placeholder="Type a note..."
+                oninput="updateMessage()">
         </div>
+
         <div class="input-group">
-            <label for="timer-select">Auto-Reset Timer</label>
+            <label for="timer-select">
+                Auto-Reset Timer
+            </label>
+
             <select id="timer-select">
                 <option value="0">No Timer</option>
-                <option value="5">5 Mins</option>
-                <option value="15">15 Mins</option>
-                <option value="30">30 Mins</option>
+                <option value="5">5 Minutes</option>
+                <option value="15">15 Minutes</option>
+                <option value="30">30 Minutes</option>
                 <option value="60">1 Hour</option>
             </select>
         </div>
+
     </div>
 
-    <script>
-        let countdownInterval;
+</details>
 
-        function varColor(name) {
-            return getComputedStyle(document.documentElement).getPropertyValue(`--color-${name}`).trim();
-        }
+<script>
 
-        function setStatus(statusName, bgColor, textColor) {
-            const card = document.getElementById('display-card');
-            const text = document.getElementById('current-status-text');
-            const msgDisplay = document.getElementById('custom-message-display');
-            const timerEl = document.getElementById('timer-display');
-            const durationSelect = document.getElementById('timer-select');
-            
-            clearInterval(countdownInterval);
-            timerEl.style.display = "none";
+let countdownInterval;
 
-            // Turn panel into the full status colour
-            card.style.backgroundColor = bgColor;
-            card.style.color = textColor;
-            text.style.color = textColor;
-            text.innerText = statusName.toUpperCase();
+/* =====================================
+   DRAWER TEXT
+   ===================================== */
 
-            let minutes = parseInt(durationSelect.value);
-            if (minutes > 0) {
-                let timeRemaining = minutes * 60;
-                timerEl.style.display = "block";
-                updateTimerUI(timeRemaining);
+const tray = document.getElementById("controlTray");
+const traySummary = document.getElementById("traySummary");
 
-                countdownInterval = setInterval(() => {
-                    timeRemaining--;
-                    updateTimerUI(timeRemaining);
+function updateTrayText(){
 
-                    if (timeRemaining <= 0) {
-                        clearInterval(countdownInterval);
-                        setStatus('Free / Available', varColor('free'), '#111111');
-                        document.getElementById('custom-msg').value = '';
-                        updateMessage();
+    traySummary.textContent =
+        tray.open
+        ? "▼ Click to Hide Controls"
+        : "▲ Click to Show Controls";
+
+}
+
+tray.addEventListener("toggle", updateTrayText);
+updateTrayText();
+
+
+/* =====================================
+   STATUS NOTE
+   ===================================== */
+
+function updateMessage(){
+
+    const value =
+        document
+            .getElementById("custom-msg")
+            .value
+            .trim();
+
+    document
+        .getElementById("custom-message-display")
+        .textContent =
+        value || "No custom note set";
+
+    localStorage.setItem(
+        "statusNote",
+        value
+    );
+
+}
+
+
+/* =====================================
+   STATUS FUNCTIONS
+   ===================================== */
+
+function setStatus(name,bgColor,textColor,startTimer=true){
+
+    document.body.style.backgroundColor =
+        bgColor;
+
+    document.body.style.color =
+        textColor;
+
+    document.getElementById(
+        "current-status-text"
+    ).textContent =
+        name.toUpperCase();
+
+    document.getElementById(
+        "current-status-text"
+    ).style.color =
+        textColor;
+
+    document.getElementById(
+        "custom-message-display"
+    ).style.color =
+        textColor;
+
+    document.getElementById(
+        "timer-display"
+    ).style.color =
+        textColor;
+
+    localStorage.setItem(
+        "status",
+        name
+    );
+
+    localStorage.setItem(
+        "bgColor",
+        bgColor
+    );
+
+    localStorage.setItem(
+        "textColor",
+        textColor
+    );
+
+    clearInterval(countdownInterval);
+
+    const timerDisplay =
+        document.getElementById(
+            "timer-display"
+        );
+
+    timerDisplay.style.display =
+        "none";
+
+    if(!startTimer){
+        return;
+    }
+
+    const mins =
+        parseInt(
+            document.getElementById(
+                "timer-select"
+            ).value
+        );
+
+    if(mins > 0){
+
+        let remaining =
+            mins * 60;
+
+        const endTime =
+            Date.now() +
+            (remaining * 1000);
+
+        localStorage.setItem(
+            "timerEnd",
+            endTime
+        );
+
+        timerDisplay.style.display =
+            "block";
+
+        updateTimer(remaining);
+
+        countdownInterval =
+            setInterval(() => {
+
+                remaining =
+                    Math.floor(
+                        (
+                            endTime -
+                            Date.now()
+                        ) / 1000
+                    );
+
+                if(remaining <= 0){
+
+                    resetStatus();
+                    return;
+
+                }
+
+                updateTimer(
+                    remaining
+                );
+
+            },1000);
+
+    }
+    else{
+
+        localStorage.removeItem(
+            "timerEnd"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   TIMER
+   ===================================== */
+
+function updateTimer(seconds){
+
+    const mins =
+        Math.floor(seconds / 60)
+        .toString()
+        .padStart(2,"0");
+
+    const secs =
+        (seconds % 60)
+        .toString()
+        .padStart(2,"0");
+
+    document.getElementById(
+        "timer-display"
+    ).textContent =
+        mins + ":" + secs;
+
+}
+
+
+function resetStatus(){
+
+    clearInterval(
+        countdownInterval
+    );
+
+    localStorage.removeItem(
+        "timerEnd"
+    );
+
+    localStorage.removeItem(
+        "statusNote"
+    );
+
+    document.getElementById(
+        "custom-msg"
+    ).value = "";
+
+    updateMessage();
+
+    document.getElementById(
+        "timer-display"
+    ).style.display =
+        "none";
+
+    setStatus(
+        "Free / Available",
+        "#2ecc71",
+        "#111111",
+        false
+    );
+
+}
+
+
+/* =====================================
+   LOAD SAVED STATUS
+   ===================================== */
+
+window.addEventListener(
+    "load",
+    () => {
+
+    const note =
+        localStorage.getItem(
+            "statusNote"
+        ) || "";
+
+    document.getElementById(
+        "custom-msg"
+    ).value =
+        note;
+
+    updateMessage();
+
+    const status =
+        localStorage.getItem(
+            "status"
+        );
+
+    const bgColor =
+        localStorage.getItem(
+            "bgColor"
+        );
+
+    const textColor =
+        localStorage.getItem(
+            "textColor"
+        );
+
+    if(
+        status &&
+        bgColor &&
+        textColor
+    ){
+
+        setStatus(
+            status,
+            bgColor,
+            textColor,
+            false
+        );
+
+    }
+
+    const timerEnd =
+        Number(
+            localStorage.getItem(
+                "timerEnd"
+            )
+        );
+
+    if(timerEnd){
+
+        let remaining =
+            Math.floor(
+                (
+                    timerEnd -
+                    Date.now()
+                ) / 1000
+            );
+
+        if(remaining > 0){
+
+            document.getElementById(
+                "timer-display"
+            ).style.display =
+                "block";
+
+            updateTimer(
+                remaining
+            );
+
+            countdownInterval =
+                setInterval(
+                    () => {
+
+                    remaining =
+                        Math.floor(
+                            (
+                                timerEnd -
+                                Date.now()
+                            ) / 1000
+                        );
+
+                    if(
+                        remaining <= 0
+                    ){
+
+                        resetStatus();
+                        return;
+
                     }
-                }, 1000);
-            }
-        }
 
-        function updateMessage() {
-            const msgInput = document.getElementById('custom-msg').value;
-            const displayMsg = document.getElementById('custom-message-display');
-            displayMsg.innerText = msgInput ? msgInput : "No custom note set";
-        }
+                    updateTimer(
+                        remaining
+                    );
 
-        function updateTimerUI(seconds) {
-            const min = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const sec = (seconds % 60).toString().padStart(2, '0');
-            document.getElementById('timer-display').innerText = `${min}:${sec}`;
+                },1000);
+
         }
-    </script>
+        else{
+
+            resetStatus();
+
+        }
+    }
+
+});
+</script>
+
 </body>
 </html>
