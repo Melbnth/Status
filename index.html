@@ -35,7 +35,7 @@
         .display-panel {
             background-color: var(--card-default);
             border-radius: 8px;
-            padding: 50px 16px; /* Doubled the top/bottom padding */
+            padding: 90px 16px; /* Doubled the top/bottom padding */
             min-height: 140px;  /* Added a distinct minimum layout height */
             text-align: center;
             display: flex;
@@ -75,6 +75,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+           margin-top: auto; /* <--- THIS LINE pushes buttons down */
         }
 
         /* Hollow / Outline Buttons style */
@@ -114,7 +115,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-top: auto;
+            /* margin-top: auto;                                                       this line commented out to allow buttons to go to bottom of page */ 
         }
 
         .input-group {
