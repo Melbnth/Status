@@ -47,7 +47,7 @@
         }
 
         #current-status-text {
-            font-size: 1.3rem;
+            font-size: 1.3rem; /* <--- MODIFY THIS LINE FOR FONT SIZE 1.3rem (std) 1.8rem (larger) 2.2rem (Very bold) 2.5rem (Max size before 2nd line) */
             font-weight: 800;
             margin: 0;
             letter-spacing: 0.5px;
@@ -152,8 +152,8 @@
         <button class="status-btn btn-free" onclick="setStatus('Free / Available', varColor('free'), '#111111')">
             ○ Free / Available
         </button>
-        <button class="status-btn btn-busy" onclick="setStatus('Busy / Do Not Disturb', varColor('busy'), '#111111')">
-            ○ Busy
+        <button class="status-btn btn-busy" onclick="setStatus('Busy / In Meeting', varColor('busy'), '#111111')">
+            ○ Busy / In Meeting
         </button>
         <button class="status-btn btn-coffee" onclick="setStatus('Busy, but yes to coffee!', varColor('coffee'), '#ffffff')">
             ○ Busy, but coffee? ☕
